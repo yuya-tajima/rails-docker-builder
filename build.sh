@@ -75,13 +75,6 @@ fi
 
 docker-compose build
 
-if [[ $WEBPACK_NATIVE_SUPPORT -eq 0 ]]; then
-  docker-compose run --no-deps web bundle install
-  docker-compose run --no-deps web rake webpacker:install 
-else
-  docker-compose run --no-deps web rails webpacker:install 
-fi
-
 # move the database configuration file to rails
 cp config/database/${DATABASE}.yml rails/config/database.yml
 
@@ -90,8 +83,14 @@ echo "##########################################################################
 echo "#                                                                                         #"
 echo "# Please follow the steps below.                                                          #"
 echo "#                                                                                         #"
-echo "# 1. Run the 'docker-compose up' or 'docker-compose up -d' command.                       #"
-echo "# 2. Open another terminal and run the 'docker-compose run web rake db:create' command.   #"
+if [[ $WEBPACK_NATIVE_SUPPORT -eq 1 ]]; then
+echo "# 1. Run the 'docker-compose run --no-deps web rails webpacker:install'                   #"
+else
+echo "# 1. Run the 'docker-compose run --no-deps web bundle install', and the                   #"
+echo "#    run the 'docker-compose run --no-deps web rake webpacker:install'                    #"
+fi
+echo "# 2. Run the 'docker-compose up' or 'docker-compose up -d' command.                       #"
+echo "# 3. Open another terminal and run the 'docker-compose run web rake db:create' command.   #"
 echo "#                                                                                         #"
 echo "# To see more information above, visit https://docs.docker.com/compose/rails/             #"
 echo "#                                                                                         #"
